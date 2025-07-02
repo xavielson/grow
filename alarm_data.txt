@@ -1,0 +1,13 @@
+rega_flora|05|On
+rega_flora|15|Off
+rega_flora|19|On
+rega_flora|25|On
+rega_flora|35|Off
+rega_flora|45|On
+rega_flora|55|Off
+rega_vega|00|On
+rega_vega|10|Off
+rega_vega|20|On
+rega_vega|30|Off
+rega_vega|40|On
+rega_vega|50|Off
