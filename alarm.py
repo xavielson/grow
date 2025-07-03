@@ -7,6 +7,8 @@ LED_VEGA_PIN = 4
 LED_FLORA_PIN = 17
 WAVEMAKER_PIN = 27
 RUNOFF_PIN = 22
+EXTRA1_PIN = 10
+EXTRA2_PIN = 9
 
 #Iniciar Pins/criar Outputs
 rega_vega = gpiozero.OutputDevice(REGA_VEGA_PIN, active_high=False, initial_value=False)
@@ -15,6 +17,8 @@ led_vega = gpiozero.OutputDevice(LED_VEGA_PIN, active_high=False, initial_value=
 led_flora = gpiozero.OutputDevice(LED_FLORA_PIN, active_high=False, initial_value=False)
 wavemaker = gpiozero.OutputDevice(WAVEMAKER_PIN, active_high=False, initial_value=False)
 runoff = gpiozero.OutputDevice(RUNOFF_PIN, active_high=False, initial_value=False)
+extra1 = gpiozero.OutputDevice(EXTRA1_PIN, active_high=False, initial_value=False)
+extra2 = gpiozero.OutputDevice(EXTRA2_PIN, active_high=False, initial_value=False)
 
 def toggle_relay(relay):
     if relay.value == 0:
@@ -57,8 +61,19 @@ def update_lights(light):
         if runoff.value == 0:
             light.configure(fg="red", activeforeground="red")
         elif runoff.value == 1:
+            light.configure(fg="green", activeforeground="green")
+
+    elif str(light) == ".extra1":
+        if extra1.value == 0:
+            light.configure(fg="red", activeforeground="red")
+        elif extra1.value == 1:
+            light.configure(fg="green", activeforeground="green")   
+
+    elif str(light) == ".extra2":
+        if extra2.value == 0:
+            light.configure(fg="red", activeforeground="red")
+        elif extra2.value == 1:
             light.configure(fg="green", activeforeground="green")           
-            
 
 #Classe Alarme
 class Alarm:
