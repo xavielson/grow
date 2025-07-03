@@ -116,28 +116,32 @@ class MainWindow(tk.Tk):
 
         self.clock_label = tk.Label(self, text=self.current_time, font=("Arial", 13))
 
-        self.settings_button = tk.Button(self, text="Settings", command=self.create_settings_window)        
+        self.settings_button = tk.Button(self, text="Settings", command=self.create_settings_window) 
+
+        self.top_space = tk.Label(self, text=" ", font=("Arial", 1))       
         
-        self.rega_vega_label.grid(row=1, column=0, sticky="w")
-        self.rega_vega_button.grid(row=1, column=2, sticky="w")
-        self.rega_flora_label.grid(row=2, column=0, sticky="w")
-        self.rega_flora_button.grid(row=2, column=2, sticky="w")
-        self.led_vega_label.grid(row=3, column=0, sticky="w")
-        self.led_vega_button.grid(row=3, column=2, sticky="w")
-        self.led_flora_label.grid(row=4, column=0, sticky="w")
-        self.led_flora_button.grid(row=4, column=2, sticky="w")
-        self.wavemaker_label.grid(row=5, column=0, sticky="w")
-        self.wavemaker_button.grid(row=5, column=2, sticky="w")
-        self.runoff_label.grid(row=6, column=0, sticky="w")
-        self.runoff_button.grid(row=6, column=2, sticky="w")
-        self.extra1_label.grid(row=7, column=0, sticky="w")
-        self.extra1_button.grid(row=7, column=2, sticky="w")
-        self.extra2_label.grid(row=8, column=0, sticky="w")
-        self.extra2_button.grid(row=8, column=2, sticky="w")        
+        self.top_space.grid(row=0, column=0, columnspan=4, pady=3)
         
-        self.settings_button.grid(row=9, column=0, columnspan=4, pady=8)
+        self.rega_vega_label.grid(row=2, column=0, sticky="w")
+        self.rega_vega_button.grid(row=2, column=2, sticky="w")
+        self.rega_flora_label.grid(row=3, column=0, sticky="w")
+        self.rega_flora_button.grid(row=3, column=2, sticky="w")
+        self.led_vega_label.grid(row=4, column=0, sticky="w")
+        self.led_vega_button.grid(row=4, column=2, sticky="w")
+        self.led_flora_label.grid(row=5, column=0, sticky="w")
+        self.led_flora_button.grid(row=5, column=2, sticky="w")
+        self.wavemaker_label.grid(row=6, column=0, sticky="w")
+        self.wavemaker_button.grid(row=6, column=2, sticky="w")
+        self.runoff_label.grid(row=7, column=0, sticky="w")
+        self.runoff_button.grid(row=7, column=2, sticky="w")
+        self.extra1_label.grid(row=8, column=0, sticky="w")
+        self.extra1_button.grid(row=8, column=2, sticky="w")
+        self.extra2_label.grid(row=9, column=0, sticky="w")
+        self.extra2_button.grid(row=9, column=2, sticky="w")        
         
-        self.clock_label.grid(row=10, column=0, columnspan=4)
+        self.settings_button.grid(row=10, column=0, columnspan=4, pady=8)
+        
+        self.clock_label.grid(row=11, column=0, columnspan=4)
         
         self.windows = []
         
@@ -310,6 +314,11 @@ class MainWindow(tk.Tk):
             return self.povoar_listbox_alarmes(self.trigger_listbox, relay)
 
         ### TRIGGER LIST AND BUTTONS###  
+        x = 0
+        while x < 6:
+            self.trigger_listbox.insert(x, "")
+            x += 1       
+        self.trigger_listbox.insert(7, " Selecione um relay  >>")
         self.trigger_listbox.pack(side="left")
 
         self.regavega_button.pack(expand=True, fill='x')
@@ -354,7 +363,14 @@ class MainWindow(tk.Tk):
                 listbox.insert(x, alarme.relay_str+" "+alarme.time+" "+status)
                 x = x+1
             else:
-                pass     
+                pass
+        if listbox.size() == 0:
+            x = 0
+            while x < 6:
+                listbox.insert(x, "")
+                x += 1 
+
+            listbox.insert(7, " Relay sem Triggers") 
      
     def update_main_window(self):
         
@@ -367,5 +383,4 @@ class MainWindow(tk.Tk):
         
         timer.timer()
         self.after(100, self.update_main_window)  # Update every 1/10 sec
-
 
