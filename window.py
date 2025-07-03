@@ -116,7 +116,7 @@ class MainWindow(tk.Tk):
 
         self.clock_label = tk.Label(self, text=self.current_time, font=("Arial", 13))
 
-        self.add_alarm_setting_button = tk.Button(self, text="Settings", command=self.create_settings_window)        
+        self.settings_button = tk.Button(self, text="Settings", command=self.create_settings_window)        
         
         self.rega_vega_label.grid(row=1, column=0, sticky="w")
         self.rega_vega_button.grid(row=1, column=2, sticky="w")
@@ -135,7 +135,7 @@ class MainWindow(tk.Tk):
         self.extra2_label.grid(row=8, column=0, sticky="w")
         self.extra2_button.grid(row=8, column=2, sticky="w")        
         
-        self.add_alarm_setting_button.grid(row=9, column=0, columnspan=4)
+        self.settings_button.grid(row=9, column=0, columnspan=4, pady=8)
         
         self.clock_label.grid(row=10, column=0, columnspan=4)
         
@@ -155,7 +155,6 @@ class MainWindow(tk.Tk):
                 minute_second.append(str(i))
             else:
                 minute_second.append("0" + str(i))
-        
         
         self.settings_window = tk.Toplevel(self)
         self.settings_window.geometry("+800+300")
@@ -178,70 +177,46 @@ class MainWindow(tk.Tk):
         self.trigger_frame_button_row = tk.Frame(self.settings_window)
         self.trigger_frame_button_row.pack()   
 
-        self.add_alarm_setting_button["state"] = "disable"
+        self.settings_button["state"] = "disable"
         
         self.windows.append(self.settings_window)
 
         self.trigger_listbox = tk.Listbox(self.list_frame, height=13)
         
-        def show_rega_vega_alarms():
-            return self.povoar_listbox_alarmes(self.trigger_listbox, "rega_vega")
-        
-        def show_rega_flora_alarms():
-            return self.povoar_listbox_alarmes(self.trigger_listbox, "rega_flora")
-        
-        def show_led_vega_alarms():
-            return self.povoar_listbox_alarmes(self.trigger_listbox, "led_vega")
-
-        def show_led_flora_alarms():
-            return self.povoar_listbox_alarmes(self.trigger_listbox, "led_flora")
-        
-        def show_wavemaker_alarms():
-            return self.povoar_listbox_alarmes(self.trigger_listbox, "wavemaker")
-        
-        def show_runoff_alarms():
-            return self.povoar_listbox_alarmes(self.trigger_listbox, "runoff")
-        
-
+        self.selected_relay = tk.StringVar()
 
         self.regavega_button = tk.Button(self.list_frame,
                                          text="Rega Vega",
-                                         command=show_rega_vega_alarms)
+                                         command=lambda: show_triggers("rega_vega"))
 
         self.regaflora_button = tk.Button(self.list_frame,
                                          text="Rega Flora",
-                                         command=show_rega_flora_alarms)
-
+                                         command=lambda: show_triggers("rega_flora"))
 
         self.ledvega_button = tk.Button(self.list_frame,
                                          text="Led Vega",
-                                         command=show_led_vega_alarms)
-
+                                         command=lambda: show_triggers("led_vega"))
 
         self.ledflora_button = tk.Button(self.list_frame,
                                          text="Led Flora",
-                                         command=show_led_flora_alarms)
-        
-
+                                         command=lambda: show_triggers("led_flora"))     
 
         self.wavemaker_button = tk.Button(self.list_frame,
                                          text="Wavemaker",
-                                         command=show_wavemaker_alarms)
-
+                                         command=lambda: show_triggers("wavemaker"))
 
         self.runoff_button = tk.Button(self.list_frame,
                                          text=" Runoff ",
-                                         command=show_runoff_alarms)
+                                         command=lambda: show_triggers("runoff"))
 
         self.extra1_button = tk.Button(self.list_frame,
                                          text="Extra 1",
-                                         command=show_runoff_alarms)
+                                         command=lambda: show_triggers("extra1"))
         
         self.extra2_button = tk.Button(self.list_frame,
                                          text="Extra 2",
-                                         command=show_runoff_alarms)   
-     
-
+                                         command=lambda: show_triggers("extra2"))   
+ 
         hour_list = tk.StringVar()
         hour_combobox = ttk.Combobox(self.trigger_frame_options_row, 
                                      textvariable=hour_list, 
@@ -281,15 +256,59 @@ class MainWindow(tk.Tk):
                                 text="Status", 
                                 font=("Arial", 13))
         
-        #add alarm button
-        add_alarm_button = tk.Button(self.trigger_frame_button_row, 
-                                     text="Set Alarm", 
-                                     command=lambda: self.add_alarm(self.relay_combobox.get(), 
-                                                                    hour_combobox.get(), 
-                                                                    minute_combobox.get(), 
-                                                                    second_combobox.get(), 
-                                                                    selected_status_button))
+        def add_trigger(relay, hora, mins, segs, status):
+        
+            if data_manager.check_time_input(hora, mins, segs):
+                data_manager.insert_alarm(relay, hora, mins, segs, status.get())
+                self.povoar_listbox_alarmes(self.trigger_listbox, self.selected_relay.get()) 
                 
+            else:            
+                messagebox.showerror("Erro", "Hora Invalida", parent=self.settings_window)
+
+        #add alarm button
+        def set_trigger():
+            add_trigger(self.selected_relay.get(), 
+                             hour_combobox.get(), 
+                             minute_combobox.get(), 
+                             second_combobox.get(), 
+                             selected_status_button)
+
+        set_trigger_button = tk.Button(self.trigger_frame_button_row, 
+                                       text="Set Trigger", 
+                                       command=set_trigger)
+        def delete_trigger():
+            try:
+                selected_trigger = self.trigger_listbox.get(self.trigger_listbox.curselection())
+                relay, time, status = selected_trigger.split(" ", 2)
+                print(relay, time, status)
+                data_manager.delete_alarm(relay, time, status)
+                self.povoar_listbox_alarmes(self.trigger_listbox, self.selected_relay.get())
+            except tk.TclError:
+                messagebox.showerror("Erro", "Selecione um trigger para deletar", parent=self.settings_window)
+
+        del_trigger_button = tk.Button(self.trigger_frame_button_row, 
+                                       text="Del Trigger",
+                                       command=delete_trigger)         
+        widgets_to_disable = [hour_combobox, minute_combobox, second_combobox, on, off, set_trigger_button, del_trigger_button]
+
+        def enable_widgets(widgets):
+            for widget in widgets:
+                widget['state'] = 'normal'            
+
+        def disable_widgets(widgets):
+            for widget in widgets:
+                widget['state'] = 'disabled'
+
+        disable_widgets(widgets_to_disable)
+
+        def show_triggers(relay):
+            if set_trigger_button['state'] == 'disabled':
+                enable_widgets(widgets_to_disable)
+            else:
+                pass
+            self.selected_relay.set(relay)
+            return self.povoar_listbox_alarmes(self.trigger_listbox, relay)
+
         ### TRIGGER LIST AND BUTTONS###  
         self.trigger_listbox.pack(side="left")
 
@@ -313,17 +332,18 @@ class MainWindow(tk.Tk):
         on.pack(side="left")
         off.pack(side="left")
 
-        add_alarm_button.pack()
+        set_trigger_button.pack(side="left", padx=5)
+        del_trigger_button.pack(side="left", padx=5)
 
         self.settings_window.protocol("WM_DELETE_WINDOW", self.close_settings_window)
 
     def close_settings_window(self):
         
         self.settings_window.destroy()
-        self.add_alarm_setting_button['state'] = 'normal'   
+        self.settings_button['state'] = 'normal'   
 
     def povoar_listbox_alarmes(self, listbox, relay):
-        self.trigger_listbox.delete(0, "end")  # Clear the listbox before inserting new items         
+        listbox.delete(0, "end")  # Clear the listbox before inserting new items         
         x = 1
         for alarme in data_manager.lista_alarmes:
             if alarme.status == 1:
@@ -347,14 +367,5 @@ class MainWindow(tk.Tk):
         
         timer.timer()
         self.after(100, self.update_main_window)  # Update every 1/10 sec
-
-    def add_alarm(self, relay, hora, mins, segs, status):
-        
-        if data_manager.check_time_input(hora, mins, segs):
-            data_manager.insert_alarm(relay, hora, mins, segs, status.get())
-            
-        else:            
-            messagebox.showerror("Erro", "Hora Invalida", parent=self.alarm_setting_window)
-        
 
 

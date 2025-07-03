@@ -15,6 +15,7 @@ def update_data():
     with open("alarm_data.txt","r", encoding='utf-8') as file:
         
         lista_alarmes_raw = file.readlines()
+        lista_alarmes.clear()
         
         for alarme in lista_alarmes_raw:            
             if alarme == "\n":
@@ -56,14 +57,10 @@ def insert_alarm(relay, hora, mins, segs, status):
         file.write(new_line)
         file.write("\n")
         
-    with open("alarm_data.txt","r+", encoding='utf-8') as file:
-        
+    with open("alarm_data.txt","r+", encoding='utf-8') as file:        
         
         alarm_data_unorganized = file.readlines()
-        #print(alarm_data_unorganized)
-        alarm_data_unorganized.sort()
-        #print(alarm_data_unorganized)
-        
+        alarm_data_unorganized.sort()       
         
     with open("alarm_data.txt","w", encoding='utf-8') as file:
         
@@ -72,8 +69,26 @@ def insert_alarm(relay, hora, mins, segs, status):
                 pass
             else:            
                 file.write(line)
+    
+    update_data()
             
-            
+def delete_alarm(relay, time, status):
+    
+    with open("alarm_data.txt","r", encoding='utf-8') as file:
+        alarm_data = file.readlines()
+    
+    with open("alarm_data.txt","r+", encoding='utf-8') as file:
+        file.truncate(0)  # Clear the file before writing new content
+        for line in alarm_data:
+            if line == "\n":
+                pass
+            else:
+                if line.startswith(relay+"|"+time+"|"+status):                    
+                    continue
+                else:
+                    file.write(line)
+
+    update_data()        
     
         
         

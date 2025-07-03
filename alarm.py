@@ -80,10 +80,31 @@ class Alarm:
     def __init__(self, relay, time, status):
         if relay == "rega_vega":            
             self.relay = rega_vega
-            self.relay_str = "rega_vega"
+            self.relay_str = relay
         elif relay == "rega_flora":            
             self.relay = rega_flora
-            self.relay_str = "rega_flora"
+            self.relay_str = relay
+        elif relay == "led_vega":            
+            self.relay = led_vega
+            self.relay_str = relay
+        elif relay == "led_flora":      
+            self.relay = led_flora
+            self.relay_str = relay
+        elif relay == "wavemaker":            
+            self.relay = wavemaker
+            self.relay_str = relay
+        elif relay == "runoff":            
+            self.relay = runoff
+            self.relay_str = relay
+        elif relay == "extra1":
+            self.relay = extra1
+            self.relay_str = relay
+        elif relay == "extra2":
+            self.relay = extra2
+            self.relay_str = relay
+        else:
+            raise ValueError("Invalid relay name")
+         
         self.time = time
         if status == "On":
             self.status = 1
