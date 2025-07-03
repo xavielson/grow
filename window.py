@@ -44,7 +44,7 @@ class MainWindow(tk.Tk):
 
         self.clock_label = tk.Label(self, text=self.current_time, font=("Arial", 13))
 
-        self.add_alarm_setting_button = tk.Button(self, text="Add Alarm Setting", command=self.create_settings_window)
+        self.add_alarm_setting_button = tk.Button(self, text="Settings", command=self.create_settings_window)
         self.open_trigger_list_button = tk.Button(self, text="Open Trigger List", command=self.create_trigger_list_window)
         
         self.rega_vega_label.grid(row=1, column=0, sticky="w")
@@ -63,7 +63,7 @@ class MainWindow(tk.Tk):
         self.runoff_button.grid(row=6, column=2, sticky="w")        
         
         self.add_alarm_setting_button.grid(row=7, column=0, columnspan=4)
-        self.open_trigger_list_button.grid(row=8, column=0, columnspan=4)
+        #self.open_trigger_list_button.grid(row=8, column=0, columnspan=4)
         
         self.clock_label.grid(row=9, column=0, columnspan=4)
         
@@ -83,7 +83,6 @@ class MainWindow(tk.Tk):
                 minute_second.append(str(i))
             else:
                 minute_second.append("0" + str(i))
-
         
         self.settings_window = tk.Toplevel(self)
         self.list_frame = tk.Frame(self.settings_window)
@@ -91,12 +90,17 @@ class MainWindow(tk.Tk):
         
         self.trigger_frame_label_row = tk.Frame(self.settings_window)
         self.trigger_frame_label_row.pack()
-        self.trigger_frame_options_row = tk.Frame(self.settings_window)
-        self.trigger_frame_options_row.pack()
+        self.middle_frame = tk.Frame(self.settings_window)
+        self.middle_frame.pack(pady=10)
+        self.trigger_frame_options_row = tk.Frame(self.middle_frame)
+        self.trigger_frame_options_row.pack(side="left", padx=10)
+        
+        self.trigger_frame_options_row2 = tk.Frame(self.middle_frame)
+        self.trigger_frame_options_row2.pack(side="left", padx=20)
         self.trigger_frame_button_row = tk.Frame(self.settings_window)
         self.trigger_frame_button_row.pack()   
 
-        self.open_trigger_list_button["state"] = "disable"
+        self.add_alarm_setting_button["state"] = "disable"
         
         self.windows.append(self.settings_window)
         
@@ -105,14 +109,22 @@ class MainWindow(tk.Tk):
         
         self.trigger_listbox = tk.Listbox(self.list_frame)
         
+        def show_rega_vega_alarms():
+            #self.relay_list.set("Rega Vega")
+            return self.get_lista_alarmes(self.trigger_listbox, "rega_vega")
+        
+        def show_rega_flora_alarms():
+            #self.relay_list.set("Rega Flora")
+            return self.get_lista_alarmes(self.trigger_listbox, "rega_flora")
+
+
         self.regavega_button = tk.Button(self.list_frame,
                                          text="Rega Vega",
-                                         command=lambda: self.get_lista_alarmes(self.trigger_listbox, 
-                                                                                "rega_vega"))
+                                         command=show_rega_vega_alarms)
+
         self.regaflora_button = tk.Button(self.list_frame,
                                          text="Rega Flora",
-                                         command=lambda: self.get_lista_alarmes(self.trigger_listbox, 
-                                                                                "rega_flora") )
+                                         command=show_rega_flora_alarms)
         self.ledvega_button = tk.Button(self.list_frame,
                                          text="Led Vega",
                                          command=lambda: self.get_lista_alarmes(self.trigger_listbox, 
@@ -135,12 +147,14 @@ class MainWindow(tk.Tk):
                                       font=("Arial", 10))
 
         #relay combobox
-        relay_list = tk.StringVar()
-        relay_combobox = ttk.Combobox(self.trigger_frame_options_row, 
-                                      textvariable=relay_list, 
-                                      width=9)        
-        relay_combobox['values'] = data_manager.relays
-        relay_combobox['state'] = 'readonly'
+        #self.relay_list = tk.StringVar()
+        #self.relay_combobox = ttk.Combobox(self.trigger_frame_options_row, 
+        #                              textvariable=self.relay_list, 
+        #                              width=9)        
+        #self.relay_combobox['values'] = data_manager.relays
+        #self.relay_combobox['state'] = 'readonly'
+
+        
 
         hour_list = tk.StringVar()
         hour_combobox = ttk.Combobox(self.trigger_frame_options_row, 
@@ -158,41 +172,39 @@ class MainWindow(tk.Tk):
         second_combobox = ttk.Combobox(self.trigger_frame_options_row, 
                                        textvariable=second_list, 
                                        width=3)
-        second_combobox["values"] = minute_second 
+        second_combobox["values"] = minute_second
 
         #onoff radiobutton
         selected_status_button = tk.BooleanVar()
 
-        on = ttk.Radiobutton(self.trigger_frame_options_row, 
-                             text="On", 
+        on = ttk.Radiobutton(self.trigger_frame_options_row2, 
+                             text="On   ", 
                              variable=selected_status_button, 
                              value=True)
         
-        off = ttk.Radiobutton(self.trigger_frame_options_row, 
+        off = ttk.Radiobutton(self.trigger_frame_options_row2, 
                               text="Off", 
                               variable=selected_status_button, 
                               value=False)        
 
         #labels
-        relay_label = tk.Label(self.trigger_frame_label_row, 
-                               text="Relay", 
-                               font=("Arial", 13),
-                               width=10)
+        #relay_label = tk.Label(self.trigger_frame_label_row, 
+        #                       text="Relay", 
+        #                       font=("Arial", 13),
+        #                       width=10)
         
-        time_label = tk.Label(self.trigger_frame_label_row, 
+        time_label = tk.Label(self.trigger_frame_options_row, 
                               text="Time", 
-                              font=("Arial", 13),
-                              width=10)
+                              font=("Arial", 13))
         
-        status_label = tk.Label(self.trigger_frame_label_row, 
+        status_label = tk.Label(self.trigger_frame_options_row2, 
                                 text="Status", 
-                                font=("Arial", 13),
-                                width=10)
+                                font=("Arial", 13))
         
         #add alarm button
         add_alarm_button = tk.Button(self.trigger_frame_button_row, 
                                      text="Set Alarm", 
-                                     command=lambda: self.add_alarm(relay_combobox.get(), 
+                                     command=lambda: self.add_alarm(self.relay_combobox.get(), 
                                                                     hour_combobox.get(), 
                                                                     minute_combobox.get(), 
                                                                     second_combobox.get(), 
@@ -211,21 +223,29 @@ class MainWindow(tk.Tk):
         ### ADD ALARM ###
         #create_alarm_label.pack()
 
-        relay_label.pack(side="left", expand=True, fill='x')
-        time_label.pack(side="left", expand=True, fill='x')
-        status_label.pack(side="left", expand=True, fill='x')
+        #relay_label.pack(side="left", expand=True, fill='x')
+        time_label.pack()
+        status_label.pack()
 
-        relay_combobox.pack(side="left")
+        #self.relay_combobox.current(0)  # Set default value
+      
+
+        #self.relay_combobox.pack(side="left")
         hour_combobox.pack(side="left")
         minute_combobox.pack(side="left")
         second_combobox.pack(side="left")
         on.pack(side="left")
         off.pack(side="left")
 
-        add_alarm_button.pack(expand=True, fill='x')
+        add_alarm_button.pack()
 
-        self.settings_window.protocol("WM_DELETE_WINDOW", self.close_trigger_list_window)
+        self.settings_window.protocol("WM_DELETE_WINDOW", self.close_settings_window)
 
+    def close_settings_window(self):
+        
+        self.settings_window.destroy()
+        self.add_alarm_setting_button['state'] = 'normal'   
+    
     def create_trigger_list_window(self):
         
 #         global trigger_list_window
