@@ -1,21 +1,13 @@
 import alarm
 
+lista_triggers = []
 
-relays = ['Rega Vega',
-          'Rega Flora',
-          'Led Vega',
-          'Led Flora',
-          'Wave Maker',
-          'Bomba Runoff']
-
-lista_alarmes = []
-
-def update_data():
-   
+# Lê o arquivo alarm_data.txt e atualiza a lista de alarmes
+def update_data():   
     with open("alarm_data.txt","r", encoding='utf-8') as file:
         
         lista_alarmes_raw = file.readlines()
-        lista_alarmes.clear()
+        lista_triggers.clear()
         
         for alarme in lista_alarmes_raw:            
             if alarme == "\n":
@@ -23,11 +15,8 @@ def update_data():
             else:                
                 alarme = alarme.replace("\n", "")
                 alarme_splited = alarme.split("|")                
-                lista_alarmes.append(alarm.Alarm(alarme_splited[0], alarme_splited[1], alarme_splited[2]))
-            
-def reset_data():
-    lista_alarmes.clear()
-    
+                lista_triggers.append(alarm.Trigger(alarme_splited[0], alarme_splited[1], alarme_splited[2]))      
+# Checa se a entrada de tempo é válida   
 def check_time_input(hora, mins, segs):
     time_for_check = [hora, mins, segs]
     ok_items = 0
@@ -40,8 +29,8 @@ def check_time_input(hora, mins, segs):
         return True
     else:
         return False
-    
-def insert_alarm(relay, hora, mins, segs, status):
+# Insere um novo trigger no arquivo alarm_data.txt e atualiza a lista de alarmes
+def insert_trigger(relay, hora, mins, segs, status):
     with open("alarm_data.txt","a", encoding='utf-8') as file:
         
         if status == True:
@@ -71,8 +60,8 @@ def insert_alarm(relay, hora, mins, segs, status):
                 file.write(line)
     
     update_data()
-            
-def delete_alarm(relay, time, status):
+# Deleta um trigger do arquivo alarm_data.txt e atualiza a lista de alarmes      
+def delete_trigger(relay, time, status):
     
     with open("alarm_data.txt","r", encoding='utf-8') as file:
         alarm_data = file.readlines()
@@ -89,8 +78,10 @@ def delete_alarm(relay, time, status):
                     file.write(line)
 
     update_data()        
-    
-        
-        
+# Reseta os triggers, limpando o arquivo alarm_data.txt e atualizando a lista de alarmes
+def reset_triggers():
+    lista_triggers.clear()
+    with open("alarm_data.txt", "w", encoding='utf-8') as file:
+        file.write("")  # Clear the file content
 
-    
+    update_data()

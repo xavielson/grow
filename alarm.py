@@ -1,6 +1,6 @@
 import gpiozero
 
-#Setar Pins
+# Setar Pins
 REGA_VEGA_PIN = 2
 REGA_FLORA_PIN = 3
 LED_VEGA_PIN = 4
@@ -10,7 +10,7 @@ RUNOFF_PIN = 22
 EXTRA1_PIN = 10
 EXTRA2_PIN = 9
 
-#Iniciar Pins/criar Outputs
+# Iniciar Pins/criar Outputs
 rega_vega = gpiozero.OutputDevice(REGA_VEGA_PIN, active_high=False, initial_value=False)
 rega_flora = gpiozero.OutputDevice(REGA_FLORA_PIN, active_high=False, initial_value=False)
 led_vega = gpiozero.OutputDevice(LED_VEGA_PIN, active_high=False, initial_value=False)
@@ -20,12 +20,13 @@ runoff = gpiozero.OutputDevice(RUNOFF_PIN, active_high=False, initial_value=Fals
 extra1 = gpiozero.OutputDevice(EXTRA1_PIN, active_high=False, initial_value=False)
 extra2 = gpiozero.OutputDevice(EXTRA2_PIN, active_high=False, initial_value=False)
 
+# Liga e desliga os relés
 def toggle_relay(relay):
     if relay.value == 0:
         relay.on()
     elif relay.value == 1:
         relay.off()
-        
+# Atualiza as "luzes" de acordo com o estado dos relés      
 def update_lights(light):
     if str(light) == ".rega_vega":
         if rega_vega.value == 0:
@@ -74,9 +75,8 @@ def update_lights(light):
             light.configure(fg="red", activeforeground="red")
         elif extra2.value == 1:
             light.configure(fg="green", activeforeground="green")           
-
-#Classe Alarme
-class Alarm:
+# Classe Trigger
+class Trigger:
     def __init__(self, relay, time, status):
         if relay == "rega_vega":            
             self.relay = rega_vega
