@@ -1,4 +1,5 @@
 import gpiozero
+import data_manager
 
 # Setar Pins
 REGA_VEGA_PIN = 2
@@ -20,6 +21,56 @@ runoff = gpiozero.OutputDevice(RUNOFF_PIN, active_high=False, initial_value=Fals
 extra1 = gpiozero.OutputDevice(EXTRA1_PIN, active_high=False, initial_value=False)
 extra2 = gpiozero.OutputDevice(EXTRA2_PIN, active_high=False, initial_value=False)
 
+# Checa se algum led deve ser ligado no start
+
+def get_led_triggers():
+    for line in data_manager.lista_triggers:
+        if line.relay_str == "led_vega":
+            if line.relay.value == 0:
+
+                print(line.time)
+
+def check_led_state_on_start(hora_liga, hora_desliga):
+    
+    lista = []
+
+    y=1
+    while y<3:
+        x=1
+        while x<25:
+            lista.append(x)
+            x += 1    
+        y += 1
+
+    hora_atual=13
+    if hora_liga > hora_desliga:
+
+        for i, j in enumerate(lista):
+            if j == hora_liga:
+                index_hora_liga = i
+                break
+
+        for i, j in enumerate(lista):
+            if j == hora_desliga:
+                index_hora_desliga = i
+
+        x = index_hora_liga
+
+        while x < index_hora_desliga:
+            if lista[x] == hora_atual:
+                return True
+            else:
+                return False
+            x += 1
+
+    if hora_liga < hora_desliga:
+
+        if hora_atual > hora_liga and hora_atual < hora_desliga:
+            return True
+        else:
+            return False
+
+    
 # Liga e desliga os relés
 def toggle_relay(relay):
     if relay.value == 0:

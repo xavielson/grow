@@ -154,7 +154,6 @@ class MainWindow(tk.Tk):
         self.clock_label.grid(row=11, column=0, columnspan=4)
         
         self.windows = []
-
     # Create the settings window for managing triggers    
     def create_settings_window(self):
         
@@ -474,4 +473,7 @@ class MainWindow(tk.Tk):
         
         timer.timer()
         self.after(100, self.update_main_window)  # Update every 1/10 sec
+
+# pega hora atual - se a hora que o led liga for maior
+
 
